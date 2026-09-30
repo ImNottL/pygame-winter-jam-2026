@@ -125,7 +125,7 @@ class Hand:
     def select_random(self) -> None:
         while True:
             index = random.randint(0, len(self.cards) - 1)
-            if self.cards[index].type != "frozen" and not self.cards[index].selected:
+            if not self.cards[index].selected:
                 break
 
         self.select(index)

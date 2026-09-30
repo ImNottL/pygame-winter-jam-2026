@@ -1,5 +1,6 @@
 # Built-In
 import random
+import copy
 
 # Internal
 from systems import Card
@@ -22,7 +23,7 @@ class Deck:
         self.shuffle()
         
     def shuffle(self) -> None:
-        self.cards = self.standard_cards.copy()
+        self.cards = copy.deepcopy(self.standard_cards)
 
     def add_card(self, card: Card) -> None:
         self.cards.append(card)
@@ -31,6 +32,9 @@ class Deck:
         self.cards.remove(card)
 
     def draw_card(self) -> Card:
+        if len(self.cards) == 0:
+            self.shuffle()
+
         card = random.choice(self.cards)
         self.remove_card(card)
 

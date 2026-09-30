@@ -91,10 +91,6 @@ class PokerSystem:
 
                     if selected_num <= self.to_discard:
                         self.to_discard -= selected_num
-                        for card in self.player.hand.get_selected_cards():
-                            if card.type != "Frozen":
-                                self.discarded.append(card)
-
                         self.player.hand.discard_selected()
 
                     if self.to_discard == 0:
@@ -137,9 +133,6 @@ class PokerSystem:
                     self.state["phase"] = PhaseState.DRAW
                     self.state["round"] = RoundState.PRE_FLOP
                     self.community_cards.cards = []
-
-                    for discarded in self.discarded:
-                        self.deck.add_card(discarded)
 
             elif key in nums and self.state["phase"] in [
                 PhaseState.DISCARD,
@@ -184,6 +177,8 @@ class PokerSystem:
     def update_preflop(self, delta_time: float) -> None:
         phase_state = self.state["phase"]
 
+        print(f"Phase State : {phase_state}")
+
         if phase_state == PhaseState.DRAW:
             self.player.queue_draw(4)
             self.opponent.queue_draw(4)
@@ -197,10 +192,6 @@ class PokerSystem:
             for i in range(max(self.opponent.hand.num_cards - 2, 0)):
                 self.opponent.hand.select_random()
                 self.opponent.hand.discard_selected()
-
-            for card in self.opponent.hand.get_selected_cards():
-                if card.type != "Frozen":
-                    self.discarded.append(card)
 
             self.state["phase"] = PhaseState.DRAW
             self.state["round"] = RoundState.FLOP
@@ -217,6 +208,8 @@ class PokerSystem:
         phase_state = self.state["phase"]
         round_state = self.state["round"]
 
+        print(f"Phase State : {phase_state}")
+
         if phase_state == PhaseState.DRAWING and self.player.cards_to_draw == 0:
             self.state["phase"] = PhaseState.BET
 
@@ -228,11 +221,9 @@ class PokerSystem:
             self.state["phase"] = PhaseState.FREEZE
 
         elif phase_state == PhaseState.NEXT_PHASE:
+            print("A")
             self.opponent.hand.select_random()
             self.opponent.hand.select_random()
-            for card in self.opponent.hand.get_selected_cards():
-                if card.type != "Frozen":
-                    self.discarded.append(card)
 
             self.opponent.hand.discard_selected()
 
@@ -248,6 +239,8 @@ class PokerSystem:
                 self.state["round"] = RoundState.SHOWDOWN
                 self.state["phase"] = PhaseState.HAND_SELECTION
 
+            print("B")
+
             card = self.deck.draw_card()
             card.type = random.choice(
                 ["frozen", "default", "default", "default", "default", "default"]
@@ -257,6 +250,8 @@ class PokerSystem:
     # SHOWDOWN
     def update_showdown(self, delta_time: float) -> None:
         phase_state = self.state["phase"]
+
+        print(f"Phase State : {phase_state}")
 
         if phase_state == PhaseState.HAND_SELECTION:
             # Player chooses their best 5; score is calculated when they confirm (ENTER)
@@ -283,8 +278,6 @@ class PokerSystem:
 
             # Apply pot logic exactly once per showdown
             if not self.showdown_applied:
-                print(self.opponent.hand.value, self.player.hand.value)
-
                 # Decrease pot by how much more value the player's hand has
                 diff = self.player.hand.value - self.opponent.hand.value
                 self.pot_chips = max(0, self.pot_chips - diff)
@@ -294,6 +287,7 @@ class PokerSystem:
     def update(self, delta_time: float) -> None:
         round_state = self.state["round"]
 
+        print(f"Round State : {round_state}")
         if self.pot_chips <= 0:
             self.victory_timer += delta_time
 
