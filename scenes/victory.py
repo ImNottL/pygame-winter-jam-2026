@@ -10,6 +10,7 @@ from assets import Images, Sounds, alagard_medium
 from core import SceneManager, Scene
 from config import *
 from systems import Player
+from scenes import Poker, Title
 
 # Victory Class
 class Victory(Scene):
@@ -28,7 +29,7 @@ class Victory(Scene):
             "and the table couldn't hold you any longer.\n\n"
             "The freeze is over.\n"
             "Your bankroll is yours again.\n\n"
-            "Thanks for playing!!"
+            "Thanks for playing!! (Enter To Restart..)"
         )
 
         self.visible_text = ""
@@ -58,6 +59,20 @@ class Victory(Scene):
         # Reset fade
         self.fade_alpha = 255
         self.fade_timer = 0.0
+
+    def handle_event(self, event: pygame.Event) -> None:
+        if event.type == KEYDOWN and event.key == K_RETURN:
+            self.scene_manager.unregister_scene("poker")
+            self.scene_manager.unregister_scene("title")
+            self.scene_manager.unregister_scene("victory")
+
+            self.player.reset()
+
+            self.scene_manager.register_scene(Victory(self.scene_manager, self.player), "victory")
+            self.scene_manager.register_scene(Poker(self.scene_manager, self.player), "poker")
+            self.scene_manager.register_scene(Title(self.scene_manager, self.player), "title")
+            self.scene_manager.set_scene("title")
+
 
     def update(self, delta_time: float) -> None:
         if not self.loading:

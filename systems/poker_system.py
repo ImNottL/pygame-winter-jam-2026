@@ -177,8 +177,6 @@ class PokerSystem:
     def update_preflop(self, delta_time: float) -> None:
         phase_state = self.state["phase"]
 
-        print(f"Phase State : {phase_state}")
-
         if phase_state == PhaseState.DRAW:
             self.player.queue_draw(4)
             self.opponent.queue_draw(4)
@@ -208,8 +206,6 @@ class PokerSystem:
         phase_state = self.state["phase"]
         round_state = self.state["round"]
 
-        print(f"Phase State : {phase_state}")
-
         if phase_state == PhaseState.DRAWING and self.player.cards_to_draw == 0:
             self.state["phase"] = PhaseState.BET
 
@@ -221,7 +217,6 @@ class PokerSystem:
             self.state["phase"] = PhaseState.FREEZE
 
         elif phase_state == PhaseState.NEXT_PHASE:
-            print("A")
             self.opponent.hand.select_random()
             self.opponent.hand.select_random()
 
@@ -239,8 +234,6 @@ class PokerSystem:
                 self.state["round"] = RoundState.SHOWDOWN
                 self.state["phase"] = PhaseState.HAND_SELECTION
 
-            print("B")
-
             card = self.deck.draw_card()
             card.type = random.choice(
                 ["frozen", "default", "default", "default", "default", "default"]
@@ -250,8 +243,6 @@ class PokerSystem:
     # SHOWDOWN
     def update_showdown(self, delta_time: float) -> None:
         phase_state = self.state["phase"]
-
-        print(f"Phase State : {phase_state}")
 
         if phase_state == PhaseState.HAND_SELECTION:
             # Player chooses their best 5; score is calculated when they confirm (ENTER)
@@ -287,7 +278,6 @@ class PokerSystem:
     def update(self, delta_time: float) -> None:
         round_state = self.state["round"]
 
-        print(f"Round State : {round_state}")
         if self.pot_chips <= 0:
             self.victory_timer += delta_time
 
